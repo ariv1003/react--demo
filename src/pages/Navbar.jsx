@@ -22,7 +22,8 @@ function Navbar() {
                         </li>
                         <li>
                             <NavLink to="/signup" className={({ isActive }) => isActive ? "text-blue-500 font-bold" : "text-black font-bold"}>Sign Up</NavLink>
-                        </li>
+                     
+                 </li>
                     </ul>
                 </div>
             </div>
