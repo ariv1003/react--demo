@@ -1,7 +1,9 @@
 import React from 'react'
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import Loader from './Loader';
+import { toast } from 'react-toastify';
 
 function AuthForm({ page }) {
        const [loginDetails, setLoginDetails] = useState({
@@ -14,15 +16,23 @@ function AuthForm({ page }) {
               password: "",
        });
 
+       const [isLoading, setIsLoading] = useState(false);
+
+       const navigate = useNavigate();
+
        const registerUser = async () => {
               try {
-                     const res = await axios.post("http://restapi.adequateshop.com/swagger/ui/index#!/AuthAccount/AuthAccount_Registration", {
-                            "name": signUpDetails.name,
-                            "email": signUpDetails.email,
-                            "password": signUpDetails.password,
-                     });
-                     console.log(res);
+                     setIsLoading(true);
+                     const res = await axios.post("https://react-api-fp0j.onrender.com/api/register", signUpDetails);
+                     setIsLoading(false);
+                     if (res.status === 201) {
+                            toast.success("Registered Successfully !", {
+                                   position: "bottom-right"
+                            });
+                            navigate("/")
+                     }
               } catch (error) {
+                     setIsLoading(false);
                      console.log(error);
               }
        }
@@ -124,17 +134,17 @@ function AuthForm({ page }) {
                                        font-regular 
                                        rounded-lg 
                                        py-2 px-2 
-                                       mt-5 `}
+                                       mt-5 flex justify-center`}
 
-                                          >Sign In</button>
+                                          >{isLoading === true ? <Loader /> : "Sign In"}</button>
                                                  : <button className={`${!signUpDetails.password || !signUpDetails.email || !signUpDetails.name ? " bg-[#bcf5d9] text-[#6caec6]" : "cursor-pointer bg-[#20DF7F] text-[#224957]"}
                                   text-base 
                                   w-full 
                                   font-regular 
                                   rounded-lg 
                                   py-2 px-2 
-                                  mt-5 `}
-                                                        onClick={registerUser}>SignUp</button>}
+                                  mt-5 flex justify-center`}
+                                                        onClick={registerUser}>{isLoading === true ? <Loader /> : "Sign Up"}</button>}
                                    </div>
                             </div>
                      </div>

@@ -1,10 +1,12 @@
 import React,{useState} from 'react';
 import {BrowserRouter, Route, Routes} from "react-router-dom";
-import Login from './pages/Login';
+import { ToastContainer } from 'react-toastify';
+import Login from "./pages/Login"
 import SignUp from './pages/SignUp';
 import Dashboard from './pages/Dashboard';
 import Post from './pages/Post';
 import Navbar from './pages/Navbar';
+import 'react-toastify/dist/ReactToastify.css';
 function App() {
 
    return (
@@ -12,6 +14,7 @@ function App() {
     <>
     
     <BrowserRouter>
+    <ToastContainer/>
     <Navbar/>
     <Routes>
       <Route path="/" element={<Login/>}/>
