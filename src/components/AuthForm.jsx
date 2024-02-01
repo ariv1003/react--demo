@@ -33,7 +33,7 @@ function AuthForm({ page }) {
                      }
               } catch (error) {
                      setIsLoading(false);
-                     console.log(error);
+                     console.log(error.response.data.message);
               }
        }
        function handleUserInputs(e) {
