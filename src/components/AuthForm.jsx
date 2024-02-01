@@ -13,32 +13,81 @@ function AuthForm({ page }) {
        const [signUpDetails, setSignUpDetails] = useState({
               name: "",
               email: "",
-              password: "",
+              password: ""
        });
 
+       const [error, setError] = useState("");
+
        const [isLoading, setIsLoading] = useState(false);
+
+       const loginValidation = !loginDetails.email || !loginDetails.password;
+       const signupValidation = !signUpDetails.name || !signUpDetails.email || !signUpDetails.password;
+
+       const [isSubmitted, SetIsSubmitted] = useState(false);
 
        const navigate = useNavigate();
 
        const registerUser = async () => {
-              try {
-                     setIsLoading(true);
-                     const res = await axios.post("https://react-api-fp0j.onrender.com/api/register", signUpDetails);
-                     setIsLoading(false);
-                     if (res.status === 201) {
-                            toast.success("Registered Successfully !", {
-                                   position: "bottom-right"
-                            });
-                            navigate("/")
+              if (page === "signup" && signupValidation) {
+                     SetIsSubmitted(true);
+              }
+              else {
+                     try {
+                            setIsLoading(true);
+                            const res = await axios.post(
+                                   "https://react-api-fp0j.onrender.com/api/register",
+                                   signUpDetails
+                            );
+                            setIsLoading(false);
+                            if (res.status === 201) {
+                                   toast.success("Registered Successfully !", {
+                                          position: "bottom-right"
+                                   });
+                                   navigate("/")
+                            }
+                            SetIsSubmitted(false);
+                     } catch (error) {
+                            setIsLoading(false);
+                            SetIsSubmitted(false);
+                            if (error.response.data) {
+                                   setError(error.response.data.message);
+                            }
+
                      }
-              } catch (error) {
-                     setIsLoading(false);
-                     if(error.response.data){
-                            console.log(error.response.data.message);
-                     }
-                     
               }
        }
+
+       const loginUser = async () => {
+              if (page === "login" && loginValidation) {
+                     SetIsSubmitted(true);
+              }
+              else {
+                     try {
+                            setIsLoading(true);
+                            const res = await axios.post(
+                                   "https://react-api-fp0j.onrender.com/api/login",
+                                   loginDetails
+                            );
+                            setIsLoading(false);
+                            if (res.status === 200) {
+                                   toast.success("Logged In Successfully !", {
+                                          position: "bottom-right"
+                                   });
+                                   navigate("/dashboard")
+                                   localStorage.setItem("usertoken",JSON.stringify(res.data))
+                            }
+                            SetIsSubmitted(false);
+                     } catch (error) {
+                            setIsLoading(false);
+                            SetIsSubmitted(false);
+                            if (error.response.data) {
+                                   setError(error.response.data.message);
+                            }
+
+                     }
+              }
+       }
+
        function handleUserInputs(e) {
               if (page == "login") {
                      setLoginDetails({
@@ -126,6 +175,9 @@ function AuthForm({ page }) {
                                                         id="password"
                                                         onChange={handleUserInputs} />
                                           </div>
+                                          <h1 className='text-red-800 text-xs'>{error ? error : ""}</h1>
+                                          {page === "signup" && signupValidation && isSubmitted && <h1 className='text-red-800 text-xs'>Please enter the all the details</h1>}
+                                          {page !== "signup" && loginValidation && isSubmitted && <h1 className='text-red-800 text-xs'>Please enter the all the details</h1>}
                                           <div className='flex justify-end mt-9'>
                                                  {page == "signup" ? <p className='text-black 
                                  font-medium 
@@ -134,7 +186,11 @@ function AuthForm({ page }) {
                                 font-medium 
                                 text-sm'>Don't have an account? <Link className='text-blue-600' to="/signup">Sign Up</Link></p>}
                                           </div>
-                                          {page == "login" ? <button className={`${!loginDetails.password || !loginDetails.email ? " bg-[#bcf5d9] text-[#6caec6]" : "cursor-pointer bg-[#20DF7F] text-[#224957]"}
+                                          {page == "login" ?
+
+                                                 <button
+                                                        // disabled={signupValidation}
+                                                        className={`${loginValidation ? " bg-[#bcf5d9] text-[#6caec6]" : "cursor-pointer bg-[#20DF7F] text-[#224957]"}
                                        text-base 
                                        w-full 
                                        font-regular 
@@ -142,14 +198,15 @@ function AuthForm({ page }) {
                                        py-2 px-2 
                                        mt-5 flex justify-center`}
 
-                                          >{isLoading === true ? <Loader /> : "Sign In"}</button>
-                                                 : <button className={`${!signUpDetails.password || !signUpDetails.email || !signUpDetails.name ? " bg-[#bcf5d9] text-[#6caec6]" : "cursor-pointer bg-[#20DF7F] text-[#224957]"}
+                                                        onClick={loginUser}>{isLoading === true ? <Loader /> : "Sign In"}</button>
+                                                 : <button className={`${signupValidation ? " bg-[#bcf5d9] text-[#6caec6]" : "cursor-pointer bg-[#20DF7F] text-[#224957]"}
                                   text-base 
                                   w-full 
                                   font-regular 
                                   rounded-lg 
                                   py-2 px-2 
                                   mt-5 flex justify-center`}
+                                                        // disabled={signupValidation}
                                                         onClick={registerUser}>{isLoading === true ? <Loader /> : "Sign Up"}</button>}
                                    </div>
                             </div>
