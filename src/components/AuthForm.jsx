@@ -33,7 +33,10 @@ function AuthForm({ page }) {
                      }
               } catch (error) {
                      setIsLoading(false);
-                     console.log(error.response.data.message);
+                     if(error.response.data){
+                            console.log(error.response.data.message);
+                     }
+                     
               }
        }
        function handleUserInputs(e) {
@@ -80,7 +83,7 @@ function AuthForm({ page }) {
                                    <div className='flex-col'>
                                           {page == "signup" && <div className='mt-6'>
 
-                                                 <label htmlFor="input-label"
+                                                 <label htmlFor="name"
                                                         className="block 
                                          text-sm 
                                          font-medium 
@@ -90,11 +93,12 @@ function AuthForm({ page }) {
                                                         className="py-3 px-4 block w-72 font-regular text-white placeholder-white border-gray-200 bg-[#224957] rounded-lg text-xs focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none "
                                                         placeholder="Enter your name"
                                                         name="name"
+                                                        id="name"
                                                         onChange={handleUserInputs} />
                                           </div>}
                                           <div className='mt-2'>
 
-                                                 <label htmlFor="input-label"
+                                                 <label htmlFor="email"
                                                         className="block 
                                     text-sm 
                                     font-medium 
@@ -104,10 +108,11 @@ function AuthForm({ page }) {
                                                         className="py-3 px-4 block w-72 font-regular text-white placeholder-white border-gray-200 bg-[#224957] rounded-lg text-xs focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none "
                                                         placeholder="Enter your email"
                                                         name="email"
+                                                        id="email"
                                                         onChange={handleUserInputs} />
                                           </div>
                                           <div className='mt-2'>
-                                                 <label htmlFor="input-label"
+                                                 <label htmlFor="password"
                                                         className="block 
                                     text-sm 
                                     font-medium 
@@ -118,6 +123,7 @@ function AuthForm({ page }) {
                                                         className="py-3 px-4 block w-72 font-regular text-white placeholder-white border-gray-200 bg-[#224957] rounded-lg text-xs focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none "
                                                         placeholder="Enter your password"
                                                         name="password"
+                                                        id="password"
                                                         onChange={handleUserInputs} />
                                           </div>
                                           <div className='flex justify-end mt-9'>
