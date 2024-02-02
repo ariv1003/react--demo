@@ -91,9 +91,6 @@ function AuthForm({ page }) {
     const regiesterValidation =
         !SignUpDetails.email || !SignUpDetails.name || !SignUpDetails.password;
     const loginValidation = !loginDetails.email || !loginDetails.password;
-
-    console.log("page", page);
-
     return (
         <div className="bg-[#D6D6D6] max-w-screen h-screen flex justify-center items-center">
             <div className="flex-col items-center">

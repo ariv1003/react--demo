@@ -1,8 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../context/authContext";
 
 function Dashboard() {
+    const { isUserLoggedIn } = useContext(AuthContext)
     const navigate = useNavigate()
     const [data, setData] = useState([])
 
@@ -14,6 +16,12 @@ function Dashboard() {
     useEffect(() => {
         getPosts();
     }, [])
+
+    useEffect(() => {
+        if (typeof isUserLoggedIn !== "undefined" && !isUserLoggedIn) {
+            navigate("/")
+        }
+    }, [isUserLoggedIn])
 
     const handleClick = (id) => {
         if (id) {
