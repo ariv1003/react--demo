@@ -1,50 +1,146 @@
 import React, { useContext, useEffect, useState } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/authContext";
+import {
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalBody,
+  ModalCloseButton,
+} from "@chakra-ui/react";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 function Dashboard() {
-    const { isUserLoggedIn } = useContext(AuthContext)
-    const navigate = useNavigate()
-    const [data, setData] = useState([])
+  const { isUserLoggedIn, userId, userToken } = useContext(AuthContext);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-    const getPosts = async () => {
-        const res = await axios.get("https://jsonplaceholder.typicode.com/posts");
-        setData(res.data);
-    };
+  const navigate = useNavigate();
 
-    useEffect(() => {
-        getPosts();
-    }, [])
+  const [blogData, setBlogData] = useState({
+    title: "",
+    content: "",
+    image_url:
+      "https://d3smn0u2zr7yfv.cloudfront.net/uploads/article/main_image/496/primary_main-1x.png",
+    tags: ["tech"],
+  });
 
-    useEffect(() => {
-        if (typeof isUserLoggedIn !== "undefined" && !isUserLoggedIn) {
-            navigate("/")
-        }
-    }, [isUserLoggedIn])
+  const handleOpenModal = () => {
+    setIsModalOpen(true);
+  };
 
-    const handleClick = (id) => {
-        if (id) {
-            navigate(`/post/${id}`)
-        }
+  useEffect(() => {
+    if (typeof isUserLoggedIn !== "undefined" && !isUserLoggedIn) {
+      navigate("/sign-in");
     }
+  }, [isUserLoggedIn]);
 
+  const createBlog = async () => {
+    try {
+      const { title, tags, content, image_url } = blogData;
+      const payload = {
+        title: title,
+        content: content,
+        image_url: image_url,
+        tags: tags,
+        userId: userId,
+      };
+      const res = await axios.post(
+        "https://react-api-fp0j.onrender.com/api/add-blog",
+        payload,
+        {
+          headers: {
+            Authorization: userToken,
+          },
+        }
+      );
+      if (res.status === 201) {
+        toast.success("Blog Created Successfully !", {
+          position: "bottom-right",
+        });
+        setIsModalOpen(false);
+        setBlogData({
+          title: "",
+          content: "",
+          image_url:
+            "https://d3smn0u2zr7yfv.cloudfront.net/uploads/article/main_image/496/primary_main-1x.png",
+          tags: ["tech"],
+        });
+      }
+    } catch (error) {
+      console.log("error");
+    }
+  };
 
-    return (
-        <div className={`h-screen w-screen p-5`}>
-            <div className="mt-5 grid grid-cols-6">
-                {data.slice(0, 10).map((item, index) => (
-                    <div className="bg-slate-800 m-5 p-2">
-                        <h1 className="text-white font-bold mb-3">{item.title}</h1>
-                        <p className="text-white">{item.body}</p>
-                        <button onClick={() => handleClick(item.id)} className="bg-white rounded-lg py-2 px-3 font-semibold mt-3">
-                            View Post
-                        </ button>
-                    </div>
-                ))}
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setBlogData({
+      ...blogData,
+      [name]: value,
+    });
+  };
+
+  return (
+    <>
+      <div className="w-full flex justify-end">
+        <button
+          className="mx-5 my-5 h-[35px] rounded-md w-[150px]  bg-blue-600 text-white text-sm font-semibold"
+          onClick={handleOpenModal}
+        >
+          Add Blog
+        </button>
+      </div>
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalCloseButton />
+          <ModalBody>
+            <div className="mt-6">
+              <label
+                for="title"
+                className="block mb-2 text-sm font-medium text-black"
+              >
+                Blog Title
+              </label>
+              <input
+                onChange={handleInputChange}
+                name="title"
+                type="text"
+                id="title"
+                className="bg-[#224957] min-w-[300px] border border-gray-300 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                placeholder="Enter Blog Title"
+                required
+              />
             </div>
-        </div>
-    );
+            <div className="mt-6">
+              <label
+                for="message"
+                class="block mb-2 text-sm font-medium text-gray-900"
+              >
+                Enter blog content
+              </label>
+              <textarea
+                onChange={handleInputChange}
+                name="content"
+                id="message"
+                rows="8"
+                className="bg-[#224957] block p-2.5 w-full text-sm text-white rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Enter blog content"
+              ></textarea>
+            </div>
+            <div className="my-5">
+              <button
+                className=" h-[35px] rounded-md w-[150px]  bg-blue-600 text-white text-sm font-semibold"
+                onClick={createBlog}
+              >
+                Create Blog
+              </button>
+            </div>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+    </>
+  );
 }
 
 export default Dashboard;

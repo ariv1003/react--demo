@@ -8,10 +8,11 @@ import Navbar from "./components/Navbar";
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer } from 'react-toastify';
 import { AuthContext } from "./context/authContext"
+import Home from "./pages/Home";
 
 function App() {
-
   const [userToken, setUserToken] = useState(undefined)
+  const [userId, setUserId] = useState(undefined)
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(undefined)
 
   useEffect(() => {
@@ -19,6 +20,7 @@ function App() {
       const data = localStorage?.getItem("userauth")
       const parsedData = JSON?.parse(data) ?? {}
       setUserToken(parsedData?.token ?? '');
+      setUserId(parsedData?.id ?? "")
     }
   }, [])
 
@@ -35,13 +37,14 @@ function App() {
 
   return (
     <>
-      <AuthContext.Provider value={{ isUserLoggedIn, userToken }}>
+      <AuthContext.Provider value={{ isUserLoggedIn, userToken, userId }}>
         <BrowserRouter>
           <ToastContainer />
           <Navbar />
           <Routes>
-            <Route path="/" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
+            <Route path="/sign-in" element={<Login />} />
+            <Route path="/sign-up" element={<Signup />} />
+            <Route path="/" element={<Home />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/post/:id" element={<Post />} />
           </Routes>

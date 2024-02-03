@@ -32,8 +32,10 @@ function AuthForm({ page }) {
                 toast.success("Logged in Successfully !", {
                     position: "bottom-right",
                 });
-                navigate("/dashboard");
                 localStorage.setItem("userauth", JSON.stringify(res.data));
+                setTimeout(() => {
+                    navigate("/dashboard");
+                }, 1000)
                 setIsLoading(false);
                 setIsSubmitted(false);
             } catch (error) {
@@ -91,6 +93,7 @@ function AuthForm({ page }) {
     const regiesterValidation =
         !SignUpDetails.email || !SignUpDetails.name || !SignUpDetails.password;
     const loginValidation = !loginDetails.email || !loginDetails.password;
+
     return (
         <div className="bg-[#D6D6D6] max-w-screen h-screen flex justify-center items-center">
             <div className="flex-col items-center">
