@@ -1,6 +1,8 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { Link, NavLink } from 'react-router-dom';
+import { AuthContext } from "../context/authContext";
 function Navbar() {
+    const { isUserLoggedIn } = useContext(AuthContext);
     return (
         <nav className="bg-white border-gray-200 ">
             <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
@@ -15,14 +17,17 @@ function Navbar() {
                     </svg>
                 </button>
                 <div className="hidden w-full md:block md:w-auto" id="navbar-default">
-                    <ul className="font-medium flex flex-col p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0 md:bg-white ">
+                    {!isUserLoggedIn ? <ul className="font-medium flex flex-col p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0 md:bg-white ">
                         <li>
                             <NavLink to="/" className={({ isActive }) => isActive ? "text-blue-500 font-bold" : "text-black font-bold"}>Sign In</NavLink>
                         </li>
                         <li>
                             <NavLink to="/signup" className={({ isActive }) => isActive ? "text-blue-500 font-bold" : "text-black font-bold"}>Sign Up</NavLink>
                         </li>
-                    </ul>
+                    </ul> :
+                        <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">
+                            Button
+                        </button>}
                 </div>
             </div>
         </nav>

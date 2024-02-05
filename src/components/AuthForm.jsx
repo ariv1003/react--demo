@@ -1,11 +1,13 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Loader from './Loader';
 import { toast } from 'react-toastify';
+import { AuthContext } from '../context/authContext';
 
 function AuthForm({ page }) {
+       const { setUserToken } = useContext(AuthContext)
        const [loginDetails, setLoginDetails] = useState({
               email: "",
               password: "",
@@ -73,8 +75,9 @@ function AuthForm({ page }) {
                                    toast.success("Logged In Successfully !", {
                                           position: "bottom-right"
                                    });
-                                   navigate("/dashboard")
-                                   localStorage.setItem("usertoken",JSON.stringify(res.data))
+                                   setUserToken(res.data.token)
+                                   localStorage.setItem("usertoken", JSON.stringify(res.data));
+                                   navigate("/dashboard");
                             }
                             SetIsSubmitted(false);
                      } catch (error) {

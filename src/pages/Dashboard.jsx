@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState,useContext } from 'react';
 import {useNavigate} from "react-router-dom"
 import axios from 'axios';
+import { AuthContext } from "../context/authContext";
 
 function Dashboard() {
-
+  const { isUserLoggedIn } = useContext(AuthContext)
   const [isDark, setIsDark] = useState(false);
   const [data, setData] = useState([]);
   const navigate = useNavigate();
@@ -19,6 +20,12 @@ function Dashboard() {
   useEffect(() => {
     getPost();
   }, []);
+
+  useEffect(() => {
+    if (typeof isUserLoggedIn !== "undefined" && !isUserLoggedIn) {
+        navigate("/")
+    }
+}, [isUserLoggedIn])
 
   return (
     <div className={`${isDark ? "bg-black text-white" : "bg-white text-black"} h-screen w-screen m-5`}>
