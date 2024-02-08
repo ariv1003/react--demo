@@ -8,12 +8,14 @@ import Post from './pages/Post';
 import Navbar from './pages/Navbar';
 import 'react-toastify/dist/ReactToastify.css';
 import { AuthContext } from "./context/authContext"
+import Home from './pages/Home';
 
 function App() {
-
+  
   const [userToken, setUserToken] = useState(undefined)
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(undefined)
-
+  
+  
 
   useEffect(() => {
     if (window) {
@@ -45,9 +47,11 @@ function App() {
           <ToastContainer />
           <Navbar />
           <Routes>
-            <Route path="/" element={<Login />} />
+            <Route path="/signin" element={<Login />} />
             <Route path="/signup" element={<SignUp />} />
+            <Route path="/" element={<Home />} /> {/* for guest users to see all the blogs and posts*/}
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/create-blog" element={<Dashboard />} />
             <Route path='/post/:id' element={<Post />} />
           </Routes>
         </BrowserRouter>
