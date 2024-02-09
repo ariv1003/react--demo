@@ -2,12 +2,9 @@ import React, { useContext } from 'react'
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { AuthContext } from "../context/authContext";
 function Navbar() {
-    const { isUserLoggedIn } = useContext(AuthContext);
+    const { isUserLoggedIn,handleLogout } = useContext(AuthContext);
     const navigate = useNavigate();
-    const handleLogout = () => {
-        localStorage.removeItem("usertoken");
-        window.location.reload();
-    }
+   
 
     return (
         <nav className=" shadow bg-white border-gray-200 ">

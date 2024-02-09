@@ -7,7 +7,7 @@ import { toast } from 'react-toastify';
 import { AuthContext } from '../context/authContext';
 
 function AuthForm({ page }) {
-       const { setUserToken } = useContext(AuthContext)
+       const { handleLogin } = useContext(AuthContext)
        const [loginDetails, setLoginDetails] = useState({
               email: "",
               password: "",
@@ -75,8 +75,8 @@ function AuthForm({ page }) {
                                    toast.success("Logged In Successfully !", {
                                           position: "bottom-right"
                                    });
-                                   setUserToken(res.data.token)
                                    localStorage.setItem("usertoken", JSON.stringify(res.data));
+                                   handleLogin();
                                    navigate("/dashboard");
                             }
                             SetIsSubmitted(false);

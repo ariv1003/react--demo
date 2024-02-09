@@ -16,7 +16,14 @@ function App() {
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(undefined)
   const [userId,setUserId]=useState(undefined);
   
-  
+  const handleLogout = () => {
+    localStorage.removeItem("usertoken");
+    setIsUserLoggedIn(false)
+  }
+  const handleLogin = () => {
+    localStorage.removeItem("usertoken");
+    setIsUserLoggedIn(true)
+  }
 
   useEffect(() => {
     if (window) {
@@ -44,7 +51,7 @@ function App() {
   return (
     //whatever we put here in app.js file, will be displayed in all the pages. (above browser router)
     <>
-      <AuthContext.Provider value={{ isUserLoggedIn, userToken, setUserToken, setIsUserLoggedIn,userId }}>
+      <AuthContext.Provider value={{ isUserLoggedIn, userToken, handleLogout,userId,handleLogin }}>
         <BrowserRouter>
           <ToastContainer />
           <Navbar />
