@@ -3,7 +3,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Dashboard from "./pages/Dashboard";
-import Post from "./pages/Post";
+import Blog from "./pages/Blog";
 import Navbar from "./components/Navbar";
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer } from 'react-toastify';
@@ -24,6 +24,15 @@ function App() {
     }
   }, [])
 
+  const handleLogout = () => {
+    localStorage.removeItem("userauth");
+    setIsUserLoggedIn(false)
+  }
+
+  const handleSetUserLoggedInTrue = () => {
+    setIsUserLoggedIn(true)
+  }
+
   useEffect(() => {
     if (typeof userToken !== "undefined") {
       if (userToken) {
@@ -37,7 +46,7 @@ function App() {
 
   return (
     <>
-      <AuthContext.Provider value={{ isUserLoggedIn, userToken, userId }}>
+      <AuthContext.Provider value={{ isUserLoggedIn, userToken, userId, handleLogout, handleSetUserLoggedInTrue }}>
         <BrowserRouter>
           <ToastContainer />
           <Navbar />
@@ -46,7 +55,7 @@ function App() {
             <Route path="/sign-up" element={<Signup />} />
             <Route path="/" element={<Home />} />
             <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/post/:id" element={<Post />} />
+            <Route path="/blog/:id" element={<Blog />} />
           </Routes>
         </BrowserRouter>
       </AuthContext.Provider>

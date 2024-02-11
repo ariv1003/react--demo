@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import Loader from "./Loader";
 import { toast } from "react-toastify";
 
-function AuthForm({ page }) {
+function AuthForm({ page, handleSetUserLoggedInTrue }) {
     const navigate = useNavigate();
     const [loginDetails, setLoginDetails] = useState({
         email: "",
@@ -33,6 +33,7 @@ function AuthForm({ page }) {
                     position: "bottom-right",
                 });
                 localStorage.setItem("userauth", JSON.stringify(res.data));
+                handleSetUserLoggedInTrue()
                 setTimeout(() => {
                     navigate("/dashboard");
                 }, 1000)

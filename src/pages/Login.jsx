@@ -4,7 +4,7 @@ import { AuthContext } from '../context/authContext';
 import { useNavigate } from 'react-router-dom';
 
 function Login() {
-    const { isUserLoggedIn } = useContext(AuthContext)
+    const { isUserLoggedIn, handleSetUserLoggedInTrue } = useContext(AuthContext)
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -15,7 +15,7 @@ function Login() {
 
     return (
         <>
-            <AuthForm page="login" />
+            <AuthForm page="login" handleSetUserLoggedInTrue={handleSetUserLoggedInTrue} />
         </>
     )
 }

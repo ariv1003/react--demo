@@ -10,6 +10,7 @@ import {
 } from "@chakra-ui/react";
 import axios from "axios";
 import { toast } from "react-toastify";
+import BlogCard from "../components/BlogCard";
 
 function Dashboard() {
   const { isUserLoggedIn, userId, userToken } = useContext(AuthContext);
@@ -24,6 +25,7 @@ function Dashboard() {
       "https://d3smn0u2zr7yfv.cloudfront.net/uploads/article/main_image/496/primary_main-1x.png",
     tags: ["tech"],
   });
+  const [blogs, setBlogs] = useState([])
 
   const handleOpenModal = () => {
     setIsModalOpen(true);
@@ -58,6 +60,7 @@ function Dashboard() {
         toast.success("Blog Created Successfully !", {
           position: "bottom-right",
         });
+        getBlogsbyUserId(userId)
         setIsModalOpen(false);
         setBlogData({
           title: "",
@@ -72,6 +75,23 @@ function Dashboard() {
     }
   };
 
+  const getBlogsbyUserId = async (userId) => {
+    try {
+      const res = await axios.get(
+        `https://react-api-fp0j.onrender.com/api/user-blog?userid=${userId}`
+      );
+      setBlogs(res?.data)
+    } catch (error) {
+      console.log("error");
+    }
+  };
+
+  useEffect(() => {
+    if (userId) {
+      getBlogsbyUserId(userId)
+    }
+  }, [userId])
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setBlogData({
@@ -82,13 +102,21 @@ function Dashboard() {
 
   return (
     <>
-      <div className="w-full flex justify-end">
-        <button
-          className="mx-5 my-5 h-[35px] rounded-md w-[150px]  bg-blue-600 text-white text-sm font-semibold"
-          onClick={handleOpenModal}
-        >
-          Add Blog
-        </button>
+      <div className="flex flex-col">
+        <div className="w-full flex justify-between mt-10 px-5">
+          <h1 className="text-lg font-bold">My Blogs</h1>
+          <button
+            className="mx-5 h-[35px] rounded-md w-[150px]  bg-blue-600 text-white text-sm font-semibold"
+            onClick={handleOpenModal}
+          >
+            Add Blog
+          </button>
+        </div>
+        <div className="grid grid-cols-4 gap-10 px-10 mt-10">
+          {blogs.map((item, index) => (
+            <BlogCard blogid={item._id} content={item.content} title={item.title} image_url={item.image_url} key={index} />
+          ))}
+        </div>
       </div>
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
         <ModalOverlay />
@@ -115,7 +143,7 @@ function Dashboard() {
             <div className="mt-6">
               <label
                 for="message"
-                class="block mb-2 text-sm font-medium text-gray-900"
+                className="block mb-2 text-sm font-medium text-gray-900"
               >
                 Enter blog content
               </label>

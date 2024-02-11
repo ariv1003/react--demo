@@ -3,12 +3,7 @@ import { Link, NavLink } from "react-router-dom";
 import { AuthContext } from "../context/authContext";
 
 function Navbar() {
-    const { isUserLoggedIn } = useContext(AuthContext);
-
-    const handleLogout = () => {
-        localStorage.removeItem("userauth");
-        window.location.reload()
-    };
+    const { isUserLoggedIn, handleLogout } = useContext(AuthContext);
 
     return (
         <nav className="shadow bg-white border-gray-200">
