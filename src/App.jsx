@@ -5,23 +5,23 @@ import Login from "./pages/Login"
 import SignUp from './pages/SignUp';
 import Dashboard from './pages/Dashboard';
 import Post from './pages/Post';
+import Blog from './pages/Blog';
 import Navbar from './pages/Navbar';
 import 'react-toastify/dist/ReactToastify.css';
 import { AuthContext } from "./context/authContext"
 import Home from './pages/Home';
 
 function App() {
-  
+
   const [userToken, setUserToken] = useState(undefined)
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(undefined)
-  const [userId,setUserId]=useState(undefined);
-  
+  const [userId, setUserId] = useState(undefined);
+
   const handleLogout = () => {
     localStorage.removeItem("usertoken");
     setIsUserLoggedIn(false)
   }
   const handleLogin = () => {
-    localStorage.removeItem("usertoken");
     setIsUserLoggedIn(true)
   }
 
@@ -51,7 +51,7 @@ function App() {
   return (
     //whatever we put here in app.js file, will be displayed in all the pages. (above browser router)
     <>
-      <AuthContext.Provider value={{ isUserLoggedIn, userToken, handleLogout,userId,handleLogin }}>
+      <AuthContext.Provider value={{ isUserLoggedIn, userToken, handleLogout, userId, handleLogin }}>
         <BrowserRouter>
           <ToastContainer />
           <Navbar />
@@ -61,7 +61,7 @@ function App() {
             <Route path="/" element={<Home />} /> {/* for guest users to see all the blogs and posts*/}
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/create-blog" element={<Dashboard />} />
-            <Route path='/post/:id' element={<Post />} />
+            <Route path='/blog/:id' element={<Blog />} />
           </Routes>
         </BrowserRouter>
       </AuthContext.Provider>

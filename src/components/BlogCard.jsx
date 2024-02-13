@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { useNavigate } from "react-router-dom"
+import { Link } from 'react-router-dom';
 import axios from 'axios';
-import { AuthContext } from "../context/authContext";
 import { toast } from 'react-toastify';
 import {
   Modal,
@@ -12,70 +11,15 @@ import {
   ModalBody,
   ModalCloseButton,
 } from '@chakra-ui/react'
-import BlogCard from '../components/BlogCard';
 
-function Dashboard() {
-  const { isUserLoggedIn, userId, userToken } = useContext(AuthContext);
+function BlogCard({ image_url, content, title, blogid, isEdit }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [blogData, setBlogData] = useState({
-    title: "",
-    content: "",
+    title: title,
+    content: content,
     image_url: "https://www.theblogstarter.com/wp-content/uploads/2020/12/how-to-create-a-blog.jpg",
     tags: ["tech"],
-    userId: ""
   })
-
-  const [blogs,setBlogs] = useState([]);
-
-  const navigate = useNavigate();
-
-  const createBlog = async () => {
-    try {
-      const { title, content, tags, image_url } = blogData;
-      const payload = {
-        title: title,
-        content: content,
-        image_url: image_url,
-        tags: tags,
-        userId: userId  // comes from app.js
-      }
-      //we need to have token inorder to create the blog, which is passed via authorisation header
-      const res = await axios.post("https://react-api-fp0j.onrender.com/api/add-blog", payload, {
-        headers: {
-          Authorization: userToken,
-        }
-      });
-      if (res.status === 201) {
-        toast.success("Blog created Successfully !", {
-          position: "bottom-right"
-        });
-        setIsModalOpen(false);
-        getBlogByUserId(userId);
-        setBlogData({
-          title: "",
-          content: "",
-          image_url:
-            "https://d3smn0u2zr7yfv.cloudfront.net/uploads/article/main_image/496/primary_main-1x.png",
-          tags: ["tech"],
-        });
-      }
-    }
-    catch (error) {
-      console.log("error", error);
-    }
-  }
-
-  const getBlogByUserId = async (userId) => {
-    try {
-      const res = await axios.get(`https://react-api-fp0j.onrender.com/api/user-blog?userid=${userId}`);
-      setBlogs(res?.data);
-    }
-    catch (error) {
-      console.log("error", error);
-    }
-  }
-  
-
 
   function handleInputs(e) {
     setBlogData({
@@ -84,31 +28,48 @@ function Dashboard() {
     })
   }
 
-  useEffect(() => {
-    if (typeof isUserLoggedIn !== "undefined" && !isUserLoggedIn) {
-      navigate("/signin")
+  const editBlog = async (blogid) => {
+    try {
+      const { title, content, tags, image_url } = blogData;
+      const payload = {
+        title: title,
+        content: content,
+        image_url: image_url,
+        tags: tags,
+      }
+      const res = await axios.put(`https://react-api-fp0j.onrender.com/api/edit-blog/${blogid}`, payload)
+      if (res.status === 200) {
+        toast.success("Blog Updated Successfully !", {
+          position: "bottom-right"
+        });
+        setIsModalOpen(false);
+      }
     }
-  }, [isUserLoggedIn])
-
-  useEffect(() => {
-    if (typeof userId !== undefined && userId) {
-      getBlogByUserId(userId);
+    catch (error) {
+      console.log("error", error)
     }
-  },[userId]);
-
+  }
   return (
     <>
-      <div className='flex flex-col mb-10'>
-      <div className='w-full flex justify-between mt-10 px-5'>
-        <h1 className='text-lg font-bold'>My Blogs</h1>
-        <button className="mx-5 h-[35px] rounded-md w-[150px]  bg-blue-600 text-white text-sm font-semibold"
-          onClick={() => setIsModalOpen(true)}>Add Blog</button>
-      </div>
-        <div className='grid grid-cols-4 gap-10 px-10 mt-10'>
-          {blogs.map((item,index)=>(
-            <BlogCard isEdit={true} blogid={item._id} key={index} image_url={item.image_url} content={item.content} title={item.title}/>
-          ))}
-      </div>
+      <div className="max-w-sm bg-white border border-gray-200 rounded-lg shadow ">
+        <div className='w-full h-[200px] relative'>
+          <Link to={`/blog/${blogid}`}>
+            <img className="rounded-t-lg h-[200px] w-full object-cover" src={image_url} alt="" />
+          </Link>
+          {isEdit && <div className='absolute top-0 right-0 p-4' onClick={() => setIsModalOpen(true)}>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
+              <path d="M21.731 2.269a2.625 2.625 0 0 0-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 0 0 0-3.712ZM19.513 8.199l-3.712-3.712-8.4 8.4a5.25 5.25 0 0 0-1.32 2.214l-.8 2.685a.75.75 0 0 0 .933.933l2.685-.8a5.25 5.25 0 0 0 2.214-1.32l8.4-8.4Z" />
+              <path d="M5.25 5.25a3 3 0 0 0-3 3v10.5a3 3 0 0 0 3 3h10.5a3 3 0 0 0 3-3V13.5a.75.75 0 0 0-1.5 0v5.25a1.5 1.5 0 0 1-1.5 1.5H5.25a1.5 1.5 0 0 1-1.5-1.5V8.25a1.5 1.5 0 0 1 1.5-1.5h5.25a.75.75 0 0 0 0-1.5H5.25Z" />
+            </svg>
+          </div>}
+
+        </div>
+        <div className="p-5">
+
+          <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 ">{title}</h5>
+
+          <p className="text-split mb-3 font-normal text-gray-700  ">{content}</p>
+        </div>
       </div>
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
         <ModalOverlay />
@@ -122,6 +83,7 @@ function Dashboard() {
                 placeholder="Enter your blog title"
                 name="title"
                 id="title"
+                value={blogData.title}
                 onChange={handleInputs}
                 required />
             </div>
@@ -138,22 +100,24 @@ function Dashboard() {
                 rows="8"
                 className="block w-full p-2.5 font-regular text-white placeholder-white border-gray-200 bg-[#224957] rounded-lg text-xs focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none "
                 placeholder="Enter blog content"
+                value={blogData.content}
                 onChange={handleInputs}
-              ></textarea>
+              />
             </div>
             <div className="my-5">
               <button
                 className=" h-[35px] rounded-md w-[150px]  bg-blue-600 text-white text-sm font-semibold"
-                onClick={createBlog}
+                onClick={() => editBlog(blogid)}
               >
-                Create Blog
+                Submit
               </button>
             </div>
           </ModalBody>
         </ModalContent>
       </Modal>
+
     </>
   )
 }
 
-export default Dashboard;
+export default BlogCard
