@@ -1,13 +1,28 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import EditIcon from "../assets/edit.png";
+import DelteIcon from "../assets/bin.png";
 
-function BlogCard({ image_url, title, content, blogid }) {
+function BlogCard({
+  image_url,
+  title,
+  content,
+  blogid,
+  isEdit,
+  isDelete,
+  editAction,
+}) {
+  const router = useNavigate();
   return (
-    <Link to={`/blog/${blogid}`}>
-      <div className="max-w-sm bg-white border border-gray-200 rounded-lg shadow">
-        <div className="w-full h-[200px]">
+    <div className="flex flex-col bg-white border border-gray-200 rounded-lg shadow">
+      <div
+        onClick={() => router(`/blog/${blogid}`)}
+        className="cursor-pointer max-w-sm"
+      >
+        {/* <Link to={`/blog/${blogid}`}> */}
+        <div className="w-full h-[150px]">
           <img
-            className="rounded-t-lg h-[200px] w-full object-cover"
+            className="rounded-t-lg h-[150px] w-full object-cover"
             src={image_url}
             alt=""
           />
@@ -21,7 +36,23 @@ function BlogCard({ image_url, title, content, blogid }) {
           </p>
         </div>
       </div>
-    </Link>
+      {/* </Link> */}
+      <div className="flex px-5 mb-3">
+        {isEdit && (
+          <button onClick={() => editAction(blogid)} className="cursor-pointer">
+            <img style={{ width: "20px" }} src={EditIcon} alt="Edit" />
+          </button>
+        )}
+        {isDelete && (
+          <img
+            className="cursor-pointer ml-3"
+            style={{ width: "20px" }}
+            src={DelteIcon}
+            alt="Delte"
+          />
+        )}
+      </div>
+    </div>
   );
 }
 

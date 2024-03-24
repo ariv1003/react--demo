@@ -56,6 +56,8 @@ function App() {
           userId,
           handleLogout,
           handleSetUserLoggedInTrue,
+          setUserToken,
+          setUserId,
         }}
       >
         <BrowserRouter>

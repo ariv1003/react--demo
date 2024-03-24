@@ -4,7 +4,8 @@ import { AuthContext } from "../context/authContext";
 import { useNavigate } from "react-router-dom";
 
 function Login() {
-  const { isUserLoggedIn, handleSetUserLoggedInTrue } = useContext(AuthContext);
+  const { isUserLoggedIn, handleSetUserLoggedInTrue, setUserToken, setUserId } =
+    useContext(AuthContext);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -18,6 +19,8 @@ function Login() {
       <AuthForm
         page="login"
         handleSetUserLoggedInTrue={handleSetUserLoggedInTrue}
+        setUserToken={setUserToken}
+        setUserId={setUserId}
       />
     </>
   );

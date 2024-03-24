@@ -5,6 +5,11 @@ import { useParams } from "react-router-dom";
 function index() {
   const { id } = useParams();
   const [blogDetail, setBlogDetail] = useState({});
+  const [isReadMore, setIsReadMore] = useState(false);
+
+  const handleReadMore = () => {
+    setIsReadMore(!isReadMore);
+  };
 
   const getBlogDetail = async (id) => {
     try {
@@ -41,9 +46,20 @@ function index() {
             CreatedAt:&nbsp;{formatDate(blogDetail.createdAt)}
           </h1>
         </div>
-        <p className="mt-5 mb-5 text-lg pr-10">
-          {blogDetail.content?.slice(0, 5000)}
-        </p>
+        <p
+          dangerouslySetInnerHTML={{
+            __html: isReadMore
+              ? blogDetail.content
+              : blogDetail.content?.split(" ").slice(0, 100).join(" "),
+          }}
+          className="mt-5 mb-5 text-lg pr-10"
+        ></p>
+        <button
+          onClick={handleReadMore}
+          className="bg-[#20DF7F] w-full my-8 py-3 flex justify-center font-semibold text-sm rounded-lg"
+        >
+          {isReadMore ? "Read Less" : "Read More"}
+        </button>
         {blogDetail?.tags &&
           blogDetail?.tags.length > 0 &&
           blogDetail?.tags.map((item, index) => (

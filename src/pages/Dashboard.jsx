@@ -15,6 +15,10 @@ import BlogCard from "../components/BlogCard";
 function Dashboard() {
   const { isUserLoggedIn, userId, userToken } = useContext(AuthContext);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editBlogData, setEditBlogData] = useState({});
+
+  console.log("editBlogData>>", editBlogData);
 
   const navigate = useNavigate();
 
@@ -75,6 +79,37 @@ function Dashboard() {
     }
   };
 
+  const updateBlog = async () => {
+    try {
+      const { title, tags, content, image_url } = editBlogData;
+      const payload = {
+        title: title,
+        content: content,
+        image_url: image_url,
+        tags: tags,
+      };
+      const res = await axios.put(
+        `https://react-api-fp0j.onrender.com/api/edit-blog/${editBlogData._id}`,
+        payload,
+        {
+          headers: {
+            Authorization: userToken,
+          },
+        }
+      );
+      if (res.status === 200) {
+        toast.success("Blog Updated Successfully !", {
+          position: "bottom-right",
+        });
+        getBlogsbyUserId(userId);
+        setIsEditModalOpen(false);
+        setEditBlogData({});
+      }
+    } catch (error) {
+      console.log("error");
+    }
+  };
+
   const getBlogsbyUserId = async (userId) => {
     try {
       const res = await axios.get(
@@ -100,6 +135,27 @@ function Dashboard() {
     });
   };
 
+  const handleEditInputChange = (e) => {
+    const { name, value } = e.target;
+    setEditBlogData({
+      ...editBlogData,
+      [name]: value,
+    });
+  };
+
+  const handleEdit = async (id) => {
+    console.log("edit working", id);
+    try {
+      const res = await axios.get(
+        `https://react-api-fp0j.onrender.com/api/blog?id=${id}`
+      );
+      setEditBlogData(res?.data);
+      setIsEditModalOpen(true);
+    } catch (error) {
+      console.log("error");
+    }
+  };
+
   return (
     <>
       <div className="flex flex-col">
@@ -115,6 +171,9 @@ function Dashboard() {
         <div className="grid grid-cols-4 gap-10 px-10 mt-10">
           {blogs.map((item, index) => (
             <BlogCard
+              editAction={handleEdit}
+              isEdit={true}
+              isDelete={true}
               blogid={item._id}
               content={item.content}
               title={item.title}
@@ -168,6 +227,57 @@ function Dashboard() {
                 onClick={createBlog}
               >
                 Create Blog
+              </button>
+            </div>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+      <Modal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalCloseButton />
+          <ModalBody>
+            <div className="mt-6">
+              <label
+                for="title"
+                className="block mb-2 text-sm font-medium text-black"
+              >
+                Blog Title
+              </label>
+              <input
+                onChange={handleEditInputChange}
+                name="title"
+                type="text"
+                id="title"
+                className="bg-[#224957] min-w-[300px] border border-gray-300 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                placeholder="Enter Blog Title"
+                required
+                value={editBlogData.title}
+              />
+            </div>
+            <div className="mt-6">
+              <label
+                for="message"
+                className="block mb-2 text-sm font-medium text-gray-900"
+              >
+                Enter blog content
+              </label>
+              <textarea
+                onChange={handleEditInputChange}
+                name="content"
+                id="message"
+                rows="8"
+                className="bg-[#224957] block p-2.5 w-full text-sm text-white rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Enter blog content"
+                value={editBlogData.content}
+              ></textarea>
+            </div>
+            <div className="my-5">
+              <button
+                className=" h-[35px] rounded-md w-[150px]  bg-blue-600 text-white text-sm font-semibold"
+                onClick={updateBlog}
+              >
+                Update Blog
               </button>
             </div>
           </ModalBody>
