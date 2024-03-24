@@ -25,7 +25,7 @@ function Dashboard() {
       "https://d3smn0u2zr7yfv.cloudfront.net/uploads/article/main_image/496/primary_main-1x.png",
     tags: ["tech"],
   });
-  const [blogs, setBlogs] = useState([])
+  const [blogs, setBlogs] = useState([]);
 
   const handleOpenModal = () => {
     setIsModalOpen(true);
@@ -60,7 +60,7 @@ function Dashboard() {
         toast.success("Blog Created Successfully !", {
           position: "bottom-right",
         });
-        getBlogsbyUserId(userId)
+        getBlogsbyUserId(userId);
         setIsModalOpen(false);
         setBlogData({
           title: "",
@@ -80,7 +80,7 @@ function Dashboard() {
       const res = await axios.get(
         `https://react-api-fp0j.onrender.com/api/user-blog?userid=${userId}`
       );
-      setBlogs(res?.data)
+      setBlogs(res?.data);
     } catch (error) {
       console.log("error");
     }
@@ -88,9 +88,9 @@ function Dashboard() {
 
   useEffect(() => {
     if (userId) {
-      getBlogsbyUserId(userId)
+      getBlogsbyUserId(userId);
     }
-  }, [userId])
+  }, [userId]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -114,7 +114,13 @@ function Dashboard() {
         </div>
         <div className="grid grid-cols-4 gap-10 px-10 mt-10">
           {blogs.map((item, index) => (
-            <BlogCard blogid={item._id} content={item.content} title={item.title} image_url={item.image_url} key={index} />
+            <BlogCard
+              blogid={item._id}
+              content={item.content}
+              title={item.title}
+              image_url={item.image_url}
+              key={index}
+            />
           ))}
         </div>
       </div>

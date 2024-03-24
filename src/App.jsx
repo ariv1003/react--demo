@@ -1,52 +1,63 @@
 import React, { useEffect, useState } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+
+import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Dashboard from "./pages/Dashboard";
 import Blog from "./pages/Blog";
+
 import Navbar from "./components/Navbar";
-import 'react-toastify/dist/ReactToastify.css';
-import { ToastContainer } from 'react-toastify';
-import { AuthContext } from "./context/authContext"
-import Home from "./pages/Home";
+
+import { AuthContext } from "./context/authContext";
+
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
-  const [userToken, setUserToken] = useState(undefined)
-  const [userId, setUserId] = useState(undefined)
-  const [isUserLoggedIn, setIsUserLoggedIn] = useState(undefined)
+  const [userToken, setUserToken] = useState(undefined);
+  const [userId, setUserId] = useState(undefined);
+  const [isUserLoggedIn, setIsUserLoggedIn] = useState(undefined);
 
   useEffect(() => {
     if (window) {
-      const data = localStorage?.getItem("userauth")
-      const parsedData = JSON?.parse(data) ?? {}
-      setUserToken(parsedData?.token ?? '');
-      setUserId(parsedData?.id ?? "")
+      const data = localStorage?.getItem("userauth");
+      const parsedData = JSON?.parse(data) ?? {};
+      setUserToken(parsedData?.token ?? "");
+      setUserId(parsedData?.id ?? "");
     }
-  }, [])
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("userauth");
-    setIsUserLoggedIn(false)
-  }
+    setIsUserLoggedIn(false);
+  };
 
   const handleSetUserLoggedInTrue = () => {
-    setIsUserLoggedIn(true)
-  }
+    setIsUserLoggedIn(true);
+  };
 
   useEffect(() => {
     if (typeof userToken !== "undefined") {
       if (userToken) {
-        setIsUserLoggedIn(true)
-      }
-      else {
-        setIsUserLoggedIn(false)
+        setIsUserLoggedIn(true);
+      } else {
+        setIsUserLoggedIn(false);
       }
     }
-  }, [userToken])
+  }, [userToken]);
 
   return (
     <>
-      <AuthContext.Provider value={{ isUserLoggedIn, userToken, userId, handleLogout, handleSetUserLoggedInTrue }}>
+      <AuthContext.Provider
+        value={{
+          isUserLoggedIn,
+          userToken,
+          userId,
+          handleLogout,
+          handleSetUserLoggedInTrue,
+        }}
+      >
         <BrowserRouter>
           <ToastContainer />
           <Navbar />
