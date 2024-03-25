@@ -107,19 +107,19 @@ function AuthForm({ page }) {
 
        return (
 
-              // In order to use justify-center or any other flex-related utility classes in Tailwind CSS, 
-              // you need to apply the flex class to the container. 
+              // In order to use justify-center or any other flex-related utility classes in Tailwind CSS,
+              // you need to apply the flex class to the container.
               //The flex class sets the display property of the element to flex, making it a flex container.
 
-              <div className='bg-[#D6D6D6] 
-                        w-screen 
-                        h-screen 
+              <div className='bg-[#D6D6D6]
+                        w-screen
+                        h-screen
                         flex justify-center	items-center'>
-                     {/*// unlike Rn wherein flex-col is default, here flex-col need to be set manually */}
+                     {/*// unlike Rn wherein flex-col is default, here flex-col need to be set manually since here flex is default to row*/}
 
                      <div className='flex-col '>
 
-                            <h1 className='text-center 
+                            <h1 className='text-center
                              text-[#224957] 
                              text-4xl 
                              font-bold'>{page === "signup" ? "Sign Up" : "Sign In"}</h1>

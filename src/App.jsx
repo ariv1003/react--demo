@@ -60,7 +60,6 @@ function App() {
             <Route path="/signup" element={<SignUp />} />
             <Route path="/" element={<Home />} /> {/* for guest users to see all the blogs and posts*/}
             <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/create-blog" element={<Dashboard />} />
             <Route path='/blog/:id' element={<Blog />} />
           </Routes>
         </BrowserRouter>
