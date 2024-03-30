@@ -4,13 +4,15 @@ import BlogCard from "../components/BlogCard";
 
 function Home() {
   const [blogs, setBlogs] = useState([]);
+  const [totalPages, setTotalPages] = useState(0);
 
   const getAllBlogs = async () => {
     try {
       const res = await axios.get(
         `https://react-api-fp0j.onrender.com/api/blogs`
       );
-      setBlogs(res?.data);
+      setBlogs(res?.data?.blogs);
+      setTotalPages(res?.data?.totalPages);
     } catch (error) {
       console.log("error");
     }

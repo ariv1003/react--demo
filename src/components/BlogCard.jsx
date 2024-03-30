@@ -11,6 +11,7 @@ function BlogCard({
   isEdit,
   isDelete,
   editAction,
+  deleteAction,
 }) {
   const router = useNavigate();
   return (
@@ -19,7 +20,6 @@ function BlogCard({
         onClick={() => router(`/blog/${blogid}`)}
         className="cursor-pointer max-w-sm"
       >
-        {/* <Link to={`/blog/${blogid}`}> */}
         <div className="w-full h-[150px]">
           <img
             className="rounded-t-lg h-[150px] w-full object-cover"
@@ -36,7 +36,6 @@ function BlogCard({
           </p>
         </div>
       </div>
-      {/* </Link> */}
       <div className="flex px-5 mb-3">
         {isEdit && (
           <button onClick={() => editAction(blogid)} className="cursor-pointer">
@@ -44,12 +43,17 @@ function BlogCard({
           </button>
         )}
         {isDelete && (
-          <img
-            className="cursor-pointer ml-3"
-            style={{ width: "20px" }}
-            src={DelteIcon}
-            alt="Delte"
-          />
+          <button
+            onClick={() => deleteAction(blogid)}
+            className="cursor-pointer"
+          >
+            <img
+              className="cursor-pointer ml-3"
+              style={{ width: "20px" }}
+              src={DelteIcon}
+              alt="Delte"
+            />
+          </button>
         )}
       </div>
     </div>

@@ -34,7 +34,7 @@ function index() {
 
   return (
     <div className="grid grid-cols-2 my-10">
-      <div>
+      <div className="px-20">
         <img src={blogDetail.image_url} alt="Blog Image" />
       </div>
       <div>
@@ -60,13 +60,15 @@ function index() {
         >
           {isReadMore ? "Read Less" : "Read More"}
         </button>
-        {blogDetail?.tags &&
-          blogDetail?.tags.length > 0 &&
-          blogDetail?.tags.map((item, index) => (
-            <h1 className="w-[100px] text-white rounded-full text-center bg-gray-700 px-3 py-3 text-lg font-medium">
-              {item}
-            </h1>
-          ))}
+        <div className="flex">
+          {blogDetail?.tags &&
+            blogDetail?.tags.length > 0 &&
+            blogDetail?.tags.map((item, index) => (
+              <h1 className="min-w-[100px] mr-3 text-white rounded-full text-center bg-gray-700 px-3 py-3 text-lg font-medium">
+                {item}
+              </h1>
+            ))}
+        </div>
       </div>
     </div>
   );

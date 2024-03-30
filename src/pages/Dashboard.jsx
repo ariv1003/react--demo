@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/authContext";
 import {
@@ -11,24 +11,36 @@ import {
 import axios from "axios";
 import { toast } from "react-toastify";
 import BlogCard from "../components/BlogCard";
+import { WithContext as ReactTags } from "react-tag-input";
+import DeleteIcon from "../../public/bin.png";
 
 function Dashboard() {
   const { isUserLoggedIn, userId, userToken } = useContext(AuthContext);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editBlogData, setEditBlogData] = useState({});
-
-  console.log("editBlogData>>", editBlogData);
-
+  const [tags, setTags] = useState([]);
   const navigate = useNavigate();
+  const inputRef = useRef(null);
+  const editInputRef = useRef(null);
+  const [file, setFile] = useState("");
+  const [imageURL, setImageURL] = useState("");
+  const [editBlogTags, setEditBlogTags] = useState([]);
 
   const [blogData, setBlogData] = useState({
     title: "",
     content: "",
-    image_url:
-      "https://d3smn0u2zr7yfv.cloudfront.net/uploads/article/main_image/496/primary_main-1x.png",
-    tags: ["tech"],
   });
+
+  useEffect(() => {
+    if (editBlogData.tags) {
+      const tags = editBlogData.tags.map((item) => {
+        return { id: item, text: item };
+      });
+      setEditBlogTags(tags);
+    }
+  }, [editBlogData]);
+
   const [blogs, setBlogs] = useState([]);
 
   const handleOpenModal = () => {
@@ -43,12 +55,15 @@ function Dashboard() {
 
   const createBlog = async () => {
     try {
-      const { title, tags, content, image_url } = blogData;
+      const filteredTags = tags.map((item) => {
+        return item.text;
+      });
+      const { title, content } = blogData;
       const payload = {
         title: title,
         content: content,
-        image_url: image_url,
-        tags: tags,
+        image_url: imageURL,
+        tags: filteredTags,
         userId: userId,
       };
       const res = await axios.post(
@@ -69,9 +84,39 @@ function Dashboard() {
         setBlogData({
           title: "",
           content: "",
-          image_url:
-            "https://d3smn0u2zr7yfv.cloudfront.net/uploads/article/main_image/496/primary_main-1x.png",
-          tags: ["tech"],
+        });
+      }
+    } catch (error) {
+      console.log("error");
+    }
+  };
+
+  const uploadImage = async (is_edit) => {
+    try {
+      const formData = new FormData();
+      formData.append("images", file);
+
+      const res = await axios.post(
+        "https://react-api-fp0j.onrender.com/api/upload/images",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: userToken,
+          },
+        }
+      );
+      if (res.status === 200) {
+        if (is_edit) {
+          setEditBlogData({
+            ...editBlogData,
+            image_url: res.data.images[0].imageUrl,
+          });
+        } else {
+          setImageURL(res.data.images[0].imageUrl);
+        }
+        toast.success("Image Uploaded Successfully !", {
+          position: "bottom-right",
         });
       }
     } catch (error) {
@@ -81,12 +126,15 @@ function Dashboard() {
 
   const updateBlog = async () => {
     try {
-      const { title, tags, content, image_url } = editBlogData;
+      const { title, content, image_url } = editBlogData;
+      const filteredTags = editBlogTags.map((item) => {
+        return item.text;
+      });
       const payload = {
         title: title,
         content: content,
         image_url: image_url,
-        tags: tags,
+        tags: filteredTags,
       };
       const res = await axios.put(
         `https://react-api-fp0j.onrender.com/api/edit-blog/${editBlogData._id}`,
@@ -106,7 +154,7 @@ function Dashboard() {
         setEditBlogData({});
       }
     } catch (error) {
-      console.log("error");
+      console.log("error", error);
     }
   };
 
@@ -144,7 +192,6 @@ function Dashboard() {
   };
 
   const handleEdit = async (id) => {
-    console.log("edit working", id);
     try {
       const res = await axios.get(
         `https://react-api-fp0j.onrender.com/api/blog?id=${id}`
@@ -154,6 +201,55 @@ function Dashboard() {
     } catch (error) {
       console.log("error");
     }
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      const res = await axios.delete(
+        `https://react-api-fp0j.onrender.com/api/blog?id=${id}`
+      );
+      if (res.status === 200) {
+        toast.error("Blog Deleted Successfully !", {
+          position: "bottom-right",
+        });
+        getBlogsbyUserId(userId);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleDeletion = (i) => {
+    setTags(tags.filter((tag, index) => index !== i));
+  };
+
+  const handleTagsAddition = (tag) => {
+    setEditBlogTags([...editBlogTags, tag]);
+  };
+
+  const handleDeletionTags = (i) => {
+    setEditBlogTags(editBlogTags.filter((tag, index) => index !== i));
+  };
+
+  const handleAddition = (tag) => {
+    setTags([...tags, tag]);
+  };
+
+  const handleOpenImage = () => {
+    inputRef.current.click();
+  };
+
+  const handleOpenEditImage = () => {
+    editInputRef.current.click();
+  };
+
+  const handleImageChange = (e) => {
+    setFile(e?.target?.files[0]);
+  };
+
+  const handleEmptyImage = () => {
+    setImageURL("");
+    setFile("");
   };
 
   return (
@@ -172,6 +268,7 @@ function Dashboard() {
           {blogs.map((item, index) => (
             <BlogCard
               editAction={handleEdit}
+              deleteAction={handleDelete}
               isEdit={true}
               isDelete={true}
               blogid={item._id}
@@ -220,6 +317,50 @@ function Dashboard() {
                 className="bg-[#224957] block p-2.5 w-full text-sm text-white rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="Enter blog content"
               ></textarea>
+              <div className="mt-5">
+                <ReactTags
+                  tags={tags}
+                  handleDelete={handleDeletion}
+                  handleAddition={handleAddition}
+                  inputFieldPosition="bottom"
+                  autocomplete
+                />
+              </div>
+              <div>
+                {file && (
+                  <div className="relative">
+                    {!imageURL ? (
+                      <img
+                        className="w-[50px] mb-5"
+                        src={URL.createObjectURL(file)}
+                        alt=""
+                      />
+                    ) : (
+                      <img className="w-[50px] mb-5" src={imageURL} alt="" />
+                    )}
+                    <h1 className="bg-red-900 flex justify-center items-center rounded-full absolute top-0 left-[40px] w-[30px] h-[30px]">
+                      <img
+                        onClick={handleEmptyImage}
+                        className="cursor-pointer w-[15px]"
+                        src={DeleteIcon}
+                        alt=""
+                      />
+                    </h1>
+                  </div>
+                )}
+                <button
+                  onClick={file ? uploadImage : handleOpenImage}
+                  className=" h-[35px] rounded-md w-[150px]  bg-blue-600 text-white text-sm font-semibold"
+                >
+                  {file ? "Upload Image" : "Choose File"}
+                </button>
+                <input
+                  onChange={handleImageChange}
+                  hidden
+                  ref={inputRef}
+                  type="file"
+                />
+              </div>
             </div>
             <div className="my-5">
               <button
@@ -232,6 +373,7 @@ function Dashboard() {
           </ModalBody>
         </ModalContent>
       </Modal>
+      {/* Edit Modal */}
       <Modal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)}>
         <ModalOverlay />
         <ModalContent>
@@ -272,6 +414,51 @@ function Dashboard() {
                 value={editBlogData.content}
               ></textarea>
             </div>
+            <div className="mt-5">
+              <ReactTags
+                tags={editBlogTags}
+                handleDelete={handleDeletionTags}
+                handleAddition={handleTagsAddition}
+                inputFieldPosition="bottom"
+                autocomplete
+              />
+            </div>
+            <div>
+              {file ? (
+                <img
+                  className="w-[50px] mb-5"
+                  src={URL.createObjectURL(file)}
+                  alt=""
+                />
+              ) : (
+                <img
+                  className="w-[50px] mb-5"
+                  src={editBlogData.image_url}
+                  alt=""
+                />
+              )}
+            </div>
+            <div>
+              <button
+                onClick={() => {
+                  if (file) {
+                    uploadImage("is_edit");
+                  } else {
+                    handleOpenEditImage();
+                  }
+                }}
+                className=" h-[35px] rounded-md w-[150px]  bg-blue-600 text-white text-sm font-semibold"
+              >
+                {file ? "Upload Image" : "Change File"}
+              </button>
+              <input
+                onChange={handleImageChange}
+                hidden
+                ref={editInputRef}
+                type="file"
+              />
+            </div>
+
             <div className="my-5">
               <button
                 className=" h-[35px] rounded-md w-[150px]  bg-blue-600 text-white text-sm font-semibold"
